@@ -33,7 +33,7 @@ git clone https://github.com/deni2312/ChatGPT-Cpp.git
 ```bash
 cd ChatGPT-Cpp
 mkdir build
-cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=/Users/junshawn/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=/Users/liaohuizhong/vcpkg/scripts/buildsystems/vcpkg.cmake
 cd build
 cmake --build .
 ./ChatBot
