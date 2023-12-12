@@ -2,10 +2,14 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include <vector> 
 #include "../include/Error.h"
 
-OpenAI::ChatGPT::ChatGPT(const std::string& token):m_token{token},m_link{"https://api.openai.com/v1/chat/completions"} {
-
+OpenAI::ChatGPT::ChatGPT(const std::string& token):m_link{"https://api.openai.com/v1/chat/completions"} {
+    if(token.empty()){
+        throw OpenAI::Error{"API token is empty"};
+    }
+    m_token = token;
 }
 
 OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role, const std::string& content) {
