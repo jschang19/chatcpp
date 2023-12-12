@@ -2,7 +2,7 @@
 #include <string>
 #include "ChatGPT/include/ChatGPT.h"
 #include "ChatGPT/include/Error.h"
-
+// this is the main function
 int main(int args,char** argv){
     //API token as argument
     // check if argument is passed
