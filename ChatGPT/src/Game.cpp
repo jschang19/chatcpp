@@ -118,6 +118,75 @@ bool System::Game::setUserChoice(int story_id, const std::string &user_choice_id
     return true;
 }
 
+void System::Game::printWelcome(){
+    this->print("\U0001F4D6 這是一個結合 ChatGPT 的文字冒險遊戲。","w");
+    this->print("\U0001F468\u200D\U0001F393 你將扮演一位大學生，並在這個遊戲中做出選擇。請輸入你想要的選項英文代號","w");
+    std::cout<<std::endl;
+    this->print("注意事項","w");
+    this->print("\u2139 本遊戲的選項由 ChatGPT 自動生成，如有雷同純屬巧合。","r");
+    this->print("\U0001F6A9 ChatGPT 可能會產生錯誤或不符情境的選項。","r");
+    std::cout<<std::endl;
+    this->print("遊戲將在 3 秒後開始","w");
+    std::cout<<std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+}
+
+void System::Game::checkStatus(const std::string& api_key){
+    
+    this->print("檢查網路連線...","l");
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    if(!this->checkConnection()){
+        this->print("\u2717 沒有網路連線，請檢查網路連線後再重新啟動遊戲","r", true);
+        exit(0);
+    }else{
+        this->print("\u2714 網路連線正常","g");
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    this->print("檢查 API key...","l");
+    if(!this->verifyOpenAiKey(api_key)){
+        this->print("\u2717 API key 驗證失敗，請檢查 API key 是否正確","r", true);
+        exit(0);
+    }else{
+        this->print("\u2714 API key 驗證成功","g");
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    this->print("\u2714 遊戲已啟動！","g");
+}
+
+bool System::Game::verifyOpenAiKey(const std::string& apiKey) {
+    // Using the models endpoint for a lighter request
+    std::string endpoint = "https://api.openai.com/v1/models";
+
+    // Making a GET request to the models endpoint
+    cpr::Response response = cpr::Get(cpr::Url{endpoint},
+                                      cpr::Header{{"Authorization", "Bearer " + apiKey}});
+
+    // Check response status code
+    if (response.status_code == 200) {
+        // Status code 200 indicates a successful response
+        return true;
+    } else {
+        // Any other status code indicates a problem
+        //std::cerr << "\u2717 Failed to verify API key. Response code: " << response.status_code << std::endl;
+        this->print("\u2717 Failed to verify API key. Response code: " + std::to_string(response.status_code), "r");
+        if (response.status_code == 401) {
+            this->print("請檢查 API key 是否正確","r", true);
+        }
+        return false;
+    }
+}
+
+bool System::Game::checkConnection(){
+    const std::string host = "www.google.com";
+    int result = system(("ping -c 1 " + host).c_str());
+
+    if (result == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 OpenAI::Message System::Game::generateStoryPrompt(int story_index) {
     std::string prompt = "";
     // get previous story
