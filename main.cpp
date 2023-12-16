@@ -8,15 +8,22 @@
 const int STORY_NUM=5;
 
 int main(int args,char** argv){
-    //API token as argument
-    // check if argument is passed
+    std::cout << "\033[2J\033[H";
+    System::Game game;
     if(args<2){
-        std::cout<<"Please provide the API token as argument"<<std::endl;
+        game.print("沒有 OpenAI API Key，請在參數後方輸入你的 API key","r", true);
+        game.print("範例：./ChatGPT <YOUR_API_KEY>");
+        game.print("請至 https://platform.openai.com/api-keys 取得 API key");
         return 0;
     }
-    System::Game game;
+
+    game.print("\U0001F389 歡迎來到 NTU 模擬器！","w", true);
+    game.checkStatus(argv[1]);
+    std::cout<<std::endl;
+
     game.count=STORY_NUM;
     OpenAI::ChatGPT chatGpt{argv[1]};
+    game.printWelcome();
     // get random story ids
     std::vector<int> story_ids = game.getRandStoryIds(STORY_NUM);
     game.story_ids = story_ids;
