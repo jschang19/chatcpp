@@ -76,6 +76,8 @@ std::string OpenAI::ChatGPT::PromptsToStringContent(){
     std :: string return_string="";
     for(int i=0; i<this->prompts.size(); i++){
         return_string += " {\"role\": \"" + this->prompts[i].role + "\" , \"content\": \"" + this->prompts[i].content + "\" }";
+
+        //處理換行符號
         if (i != this->prompts.size()-1 ){
             return_string+=",\n";
         }else{
