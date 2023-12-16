@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector> 
 #include "../include/Error.h"
+#include <string>
 
 OpenAI::ChatGPT::ChatGPT(const std::string& token):m_link{"https://api.openai.com/v1/chat/completions"} {
     if(token.empty()){
@@ -12,7 +13,8 @@ OpenAI::ChatGPT::ChatGPT(const std::string& token):m_link{"https://api.openai.co
     m_token = token;
 }
 
-OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role, const std::string& content) {
+OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
+    std :: string content= this->prompts.back();
     auto json="{\n"
                     "  \"model\": \"gpt-3.5-turbo\",\n"
                     "  \"messages\": [{\"role\": \""+role+"\", \"content\": \""+content+"\"}]\n"
