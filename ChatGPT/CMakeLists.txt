@@ -8,8 +8,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 # set to use static runtime
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-set(SOURCES src/ChatGPT.cpp src/Error.cpp)
+set(SOURCES src/ChatGPT.cpp src/Error.cpp src/Game.cpp)
 find_package(cpr CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 add_library(ChatGPTDll STATIC ${SOURCES})
 target_link_libraries(ChatGPTDll PRIVATE nlohmann_json::nlohmann_json cpr::cpr)
+
+set(STORIES_FILE data/stories.txt)
+configure_file(${STORIES_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${STORIES_FILE} COPYONLY)
