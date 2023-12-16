@@ -15,7 +15,7 @@ namespace OpenAI {
             OpenAI::ChatCompletion askChatGPT(const std::string& role);
             std::string askWhisper(const std::string& audio_path);
             std::vector< Message > prompts;
-            void Add_prompt(const std::string& new_role ,const std::string& new_content);
+            void Add_prompt(const Message& prompt);
 
         private:
             std::string m_token;

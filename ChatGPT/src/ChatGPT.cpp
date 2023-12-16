@@ -22,15 +22,32 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
     if (prompt_message==""){ //exception handling
         throw std::invalid_argument("Error:there is no prompt message, please use Add_prompts() to add prompt in Chatgpt");
     }
-
-    auto json="{\n"
-                    "  \"model\": \"gpt-3.5-turbo\",\n"
-                    "  \"messages\": ["+ prompt_message +"]\n"
-                    "}";
-
-    auto response = cpr::Post(cpr::Url{m_link},cpr::Body{json},cpr::Bearer({m_token}),cpr::Header{{"Content-Type","application/json"}}).text;
-    OpenAI::ChatCompletion chatCompletion;
     nlohmann::json j;
+    j["model"] = "gpt-4-1106-preview";
+    j["messages"] = nlohmann::json::parse("[" + prompt_message + "]");
+    j["response_format"] = {{"type", "json_object"}};
+    j["temperature"] = 1;
+    j["max_tokens"] = 1000;
+    j["n"] = 1;
+
+    std::cout<< j.dump() << std::endl;
+
+    auto response = cpr::Post(cpr::Url{m_link}, 
+                              cpr::Body{j.dump()}, 
+                              cpr::Bearer({m_token}), 
+                              cpr::Header{{"Content-Type", "application/json"}}).text;
+
+    OpenAI::ChatCompletion chatCompletion;
+    try {
+        nlohmann::json j_response = nlohmann::json::parse(response);
+        if (!j_response.contains("error")) {
+            from_json(j_response, chatCompletion);
+        } else {
+            throw OpenAI::Error{j_response.dump()};
+        }
+    } catch (std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
     try {
         j = nlohmann::json::parse(response);
     }catch(std::exception& e){
@@ -41,14 +58,15 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
     }else{
         throw OpenAI::Error{j.dump()};
     }
-
-    //adding the respond to this->prompts
-    std::string bot_response_string="";
-    for(const auto& choice:chatCompletion.choices){
-        bot_response_string+=choice.message.content;
+    // load chatCompletion.content as json
+    nlohmann::json j2;
+    try {
+        j2 = nlohmann::json::parse(chatCompletion.choices[0].message.content);
+    }catch(std::exception& e){
+        std::cerr<<"parsing j2 Error: "+chatCompletion.choices[0].message.content;
     }
-    this->Add_prompt("system",bot_response_string);
-
+    // add chatCompletion.choices[0].message.content into prompts
+    // this->Add_prompt(OpenAI::Message("assistant", j2["options"]));
     return chatCompletion;
 }
 
@@ -75,19 +93,22 @@ std::string OpenAI::ChatGPT::askWhisper(const std::string &audio_path) {
     if(j.contains("error")) {
         throw OpenAI::Error{j.dump()};
     }
+
     return j["text"];
 }
 
-void OpenAI::ChatGPT::Add_prompt(const std::string& new_role ,const std::string& new_content){
-    Message new_prompt(new_role, new_content);
+void OpenAI::ChatGPT::Add_prompt(const Message& new_prompt){
     this->prompts.push_back(new_prompt);
 }
 
 std::string OpenAI::ChatGPT::PromptsToStringContent(){
-    std :: string return_string="";
+    std :: string return_string="{\"role\": \"system\", \"content\": \"You are a text game system that generates interesting options to make young college players choose and laugh. you must produce content in Traditional Chinese.\"},";
     for(int i=0; i<this->prompts.size(); i++){
-        return_string += " {\"role\": \"" + this->prompts[i].role + "\" , \"content\": \"" + this->prompts[i].content + "\" }";
-
+        return_string += " {\"role\": \"" + this->prompts[i].role + "\" , \"content\": \"" + this->prompts[i].content;
+        if (i == this->prompts.size()-1){
+            return_string += "，幫我想 4 個好笑且具有創意的遊戲情境讓我選擇，並確保選項都跟之前我的選擇行動有關，都以「 你 」當作開頭，都以句號結尾，請用一個 key 叫 options 的 JSON 物件格式回覆我，而這個 options 的 value 是一個 Array，每個陣列元素要包含 id 跟 text 兩個 key，id 代號為 a, b, c, d";
+        }
+        return_string += "\"}";
         //處理換行符號
         if (i != this->prompts.size()-1 ){
             return_string+=",\n";
@@ -95,7 +116,5 @@ std::string OpenAI::ChatGPT::PromptsToStringContent(){
             return_string+="\n";
         }
     }
-
-
     return return_string;
 }
