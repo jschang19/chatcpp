@@ -19,11 +19,7 @@ int main(int args,char** argv){
     // get story pointers
     std::vector<System::Story*> story_ptrs;
 
-    // print out the stories
-    for (int i = 0; i < story_ids.size(); i++) {
-        story_ptrs.push_back(game.getStoryPtrById(story_ids[i]));
-        std::cout << story_ptrs[i]->content << std::endl;
-    }
+
     try {
         // get user input
         std::string userInput;

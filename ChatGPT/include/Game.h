@@ -10,7 +10,6 @@ namespace System {
     class Story {
     public:
         int id;
-        std::string location;
         std::string place;
         std::string content;
         std::vector< UserChoice > choices;
