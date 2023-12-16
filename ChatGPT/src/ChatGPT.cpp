@@ -19,6 +19,10 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
     std :: string prompt_message; //在json中回傳的message
     prompt_message= this->PromptsToStringContent();
 
+    if (prompt_message==""){ //exception handling
+        throw std::invalid_argument("Error:there is no prompt message, please use Add_prompts() to add prompt in Chatgpt");
+    }
+
     auto json="{\n"
                     "  \"model\": \"gpt-3.5-turbo\",\n"
                     "  \"messages\": ["+ prompt_message +"]\n"
@@ -37,6 +41,13 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
     }else{
         throw OpenAI::Error{j.dump()};
     }
+
+    //adding the respond to this->prompts
+    std::string bot_response_string="";
+    for(const auto& choice:chatCompletion.choices){
+        bot_response_string+=choice.message.content;
+    }
+    this->Add_prompt("system",bot_response_string);
 
     return chatCompletion;
 }
