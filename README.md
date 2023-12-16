@@ -31,12 +31,12 @@ git clone https://github.com/deni2312/ChatGPT-Cpp.git
 
 * With CMake:
 ```bash
-cd ChatGPT-Cpp
+rm -rf build
 mkdir build
 cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=/Users/liaohuizhong/vcpkg/scripts/buildsystems/vcpkg.cmake
 cd build
 cmake --build .
-./ChatBot
+./ChatBot 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
 ```  
 Change vcpkgdirectory with the relative or absolute path of vcpkg
 

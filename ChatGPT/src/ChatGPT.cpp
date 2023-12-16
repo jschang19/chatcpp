@@ -14,10 +14,12 @@ OpenAI::ChatGPT::ChatGPT(const std::string& token):m_link{"https://api.openai.co
 }
 
 OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
-    std :: string content= this->prompts.back();
+    std :: string prompt_message; //在json中回傳的message
+    prompt_message= this->PromptsToStringContent();
+
     auto json="{\n"
                     "  \"model\": \"gpt-3.5-turbo\",\n"
-                    "  \"messages\": [{\"role\": \""+role+"\", \"content\": \""+content+"\"}]\n"
+                    "  \"messages\": ["+ prompt_message +"]\n"
                     "}";
     auto response = cpr::Post(cpr::Url{m_link},cpr::Body{json},cpr::Bearer({m_token}),cpr::Header{{"Content-Type","application/json"}}).text;
     OpenAI::ChatCompletion chatCompletion;
@@ -60,4 +62,14 @@ std::string OpenAI::ChatGPT::askWhisper(const std::string &audio_path) {
         throw OpenAI::Error{j.dump()};
     }
     return j["text"];
+}
+
+std::string OpenAI::ChatGPT::PromptsToStringContent(){
+    std :: string return_string="";
+    for(int i=0; i<this->prompts.size(); i++){
+        return_string += " {\"role\": \"" + this->prompts[i].role + "\" , \"content\": \"" + this->prompts[i].content + "\" },\n";
+    } 
+
+    std :: cout << return_string;
+    return return_string;
 }

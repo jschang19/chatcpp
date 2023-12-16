@@ -81,6 +81,7 @@
         "concepts": "cpp",
         "numeric": "cpp",
         "ranges": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "charconv": "cpp"
     }
 }
