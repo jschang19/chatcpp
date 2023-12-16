@@ -3,8 +3,10 @@
 #include <vector>
 namespace OpenAI {
     struct Message{
-        std :: string role;
-        std :: string content;
+        std::string role;
+        std::string content;
+
+        Message(std::string role, std::string content); //constructor
     };
 
     class ChatGPT {
@@ -13,6 +15,8 @@ namespace OpenAI {
             OpenAI::ChatCompletion askChatGPT(const std::string& role);
             std::string askWhisper(const std::string& audio_path);
             std::vector< Message > prompts;
+            void Add_prompt(const std::string& new_role ,const std::string& new_content);
+
         private:
             std::string m_token;
             std::string m_link;

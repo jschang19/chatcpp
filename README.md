@@ -36,7 +36,7 @@ mkdir build
 cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=/Users/liaohuizhong/vcpkg/scripts/buildsystems/vcpkg.cmake
 cd build
 cmake --build .
-./ChatBot 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
+./ChatBot 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
 ```  
 Change vcpkgdirectory with the relative or absolute path of vcpkg
 
