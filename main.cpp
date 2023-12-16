@@ -29,6 +29,7 @@ int main(int args,char** argv){
         std::string userInput;
         std::cout<<"Enter your message: ";
         std::getline(std::cin,userInput);
+        chatGpt.Add_prompt("user","answer the following question in Chinese only");
         auto response = chatGpt.askChatGPT("user");
         //Iterate all answers
         for(const auto& choice:response.choices){

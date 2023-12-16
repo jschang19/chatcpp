@@ -6,6 +6,8 @@
 #include "../include/Error.h"
 #include <string>
 
+OpenAI::Message::Message(std::string role, std::string content) : role(role), content(content){}
+
 OpenAI::ChatGPT::ChatGPT(const std::string& token):m_link{"https://api.openai.com/v1/chat/completions"} {
     if(token.empty()){
         throw OpenAI::Error{"API token is empty"};
@@ -21,6 +23,7 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
                     "  \"model\": \"gpt-3.5-turbo\",\n"
                     "  \"messages\": ["+ prompt_message +"]\n"
                     "}";
+
     auto response = cpr::Post(cpr::Url{m_link},cpr::Body{json},cpr::Bearer({m_token}),cpr::Header{{"Content-Type","application/json"}}).text;
     OpenAI::ChatCompletion chatCompletion;
     nlohmann::json j;
@@ -64,12 +67,24 @@ std::string OpenAI::ChatGPT::askWhisper(const std::string &audio_path) {
     return j["text"];
 }
 
+void OpenAI::ChatGPT::Add_prompt(const std::string& new_role ,const std::string& new_content){
+    Message new_prompt(new_role, new_content);
+    this->prompts.push_back(new_prompt);
+}
+
 std::string OpenAI::ChatGPT::PromptsToStringContent(){
     std :: string return_string="";
     for(int i=0; i<this->prompts.size(); i++){
-        return_string += " {\"role\": \"" + this->prompts[i].role + "\" , \"content\": \"" + this->prompts[i].content + "\" },\n";
-    } 
+        return_string += " {\"role\": \"" + this->prompts[i].role + "\" , \"content\": \"" + this->prompts[i].content + "\" }";
 
-    std :: cout << return_string;
+        //處理換行符號
+        if (i != this->prompts.size()-1 ){
+            return_string+=",\n";
+        }else{
+            return_string+="\n";
+        }
+    }
+
+
     return return_string;
 }
