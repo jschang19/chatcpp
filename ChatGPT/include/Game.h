@@ -61,7 +61,50 @@ namespace System {
         OpenAI::Message generateStoryPrompt(int id);
         void setOptions(int id, const std::vector< System::Option > &choices);
         void printOptions(int id);
-        bool setUserChoice(int story_id, const std::string& user_choice_id);
+        void print(const std::string& str, const std::string& color = "w", bool bold=false){
+          std::string color_code;
+          switch (color[0])
+            {
+            case 'r':
+                color_code = "31";
+                break;
+            case 'g':
+                color_code = "32";
+                break;
+            case 'y':
+                color_code = "33";
+                break;
+            case 'b':
+                color_code = "34";
+                break;
+            case 'p':
+                color_code = "35";
+                break;
+            case 'c':
+                color_code = "36";
+                break;
+            case 'w':
+                color_code = "37";
+                break;
+            case 'l':
+                color_code = "90";
+                break;
+            default:
+                color_code = "37";
+                break;
+            }
+          if(bold){
+            std::cout << "\033[1;" << color_code << "m" << str << "\033[0m\n";
+            }
+            else{
+            std::cout << "\033[" << color_code << "m" << str << "\033[0m\n";
+            }
+        };
+        void printWelcome();
+        void checkStatus(const std::string& key);
+        bool verifyOpenAiKey(const std::string& key);
+        bool checkConnection();
+        bool setUserChoice(int story_id, std::string user_choice_id);
     private:
         std::vector< System::Story > readTextFile(const std::string& filename);
     };
