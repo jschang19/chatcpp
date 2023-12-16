@@ -1,6 +1,8 @@
 #include "../include/Game.h"
 #include "../include/Error.h"
+#include <cpr/cpr.h> // verify api key
 #include <vector>
+#include <stdlib.h> 
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -9,6 +11,9 @@
 #include <chrono>    // std::chrono::system_clock
 #include <tuple>
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <cstdlib> // for connection check
 
 
 System::Game::Game(){
@@ -30,18 +35,13 @@ System::Story::~Story() {
 std::vector<int> System::Game::getRandStoryIds(int num) {
     std::vector<int> ids;
 
-    // 創建一個有所有可能索引的向量
     for (int i = 0; i < this->stories.size(); ++i) {
         ids.push_back(i);
     }
 
-    // 使用當前時間作為隨機數生成器的種子
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-
-    // 打亂向量
     std::shuffle(ids.begin(), ids.end(), std::default_random_engine(seed));
 
-    // 只保留所需數量的元素
     if (num < ids.size()) {
         ids.resize(num);
     }
@@ -97,17 +97,20 @@ void System::Game::printOptions(int id) {
     if (story_ptr == nullptr) {
         return;
     }
-    std::cout << "現在你在" << story_ptr->place << "，" << story_ptr->content << std::endl;
+    this->print("\u2753 現在你在" + story_ptr->place + "，" + story_ptr->content, "w", false);
+    std::cout << std::endl;
     for (auto& choice : story_ptr->choices) {
-        std::cout << choice.id << ": " << choice.text << std::endl;
+        // std::cout << choice.id << ": " << choice.text << std::endl;
+        this->print("["+choice.id + "] " + choice.text, "w", false);
     }
 }
 
-bool System::Game::setUserChoice(int story_id, const std::string &user_choice_id) {
+bool System::Game::setUserChoice(int story_id, std::string user_choice_id) {
     System::Story* story_ptr = this->getStoryPtrById(story_id);
     if (story_ptr == nullptr) {
         return false;
     }
+    std::transform(user_choice_id.begin(), user_choice_id.end(), user_choice_id.begin(), ::tolower);
     for (auto& choice : story_ptr->choices) {
         if (choice.id == user_choice_id) {
             story_ptr->user_choice = choice.text;
