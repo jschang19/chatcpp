@@ -35,6 +35,8 @@ namespace System {
             chatGpt.Add_prompt(prompt);
         };
         OpenAI::ChatCompletion sendToChatGPT(OpenAI::ChatGPT& chatGpt){
+            this->print("ChatGPT 正在思考中...", "l");
+            std::cout<<std::endl;
             auto response = chatGpt.askChatGPT("user");
             return response;
         };
