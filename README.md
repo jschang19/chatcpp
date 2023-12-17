@@ -1,44 +1,57 @@
 
 #  ChatGPT-Cpp
+A header-only version of ChatGPT Official API written in C++
 
+* [Run with Docker](#run-with-docker)
+* [Development](#development)
 
+## Run with Docker
 
-<p align="left">A header-only version of ChatGPT Official API written in C++
+You can run this project with Docker. This is the easiest way to get started. You need to get OpenAI API token first. You can get it from [here](https://platform.openai.com/).
 
-* [Getting started.](#getting-started)
-* [Writing your first bot](#writing-your-first-bot)
+### Steps
 
-## Getting started.
+1. Clone this repository:
+```bash
+git clone https://github.com/jschang19/ntu-im-final-project.git
+cd ntu-im-final-project
+```
 
-<h2> Steps </h2>
+2. Install [Docker](https://www.docker.com/products/docker-desktop/), then run the following commands:
 
-This API is tested with C++ 17, on linux g++ and on Visual Studio 2022.
+```bash
+docker build -t chatcpp . // this will take a while
+docker run -it chatcpp
+```
 
-* Install dependencies with VCPKG
+## Development
+
+To develop this project, you need to install [CMake](https://cmake.org/download/) and [Vcpkg](https://github.com/microsoft/vcpkg).
+
+1. Install dependencies with VCPKG
  ```bash
 git clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
-bootstrap-vcpkg.bat
-vcpkg install nlohmann-json
-vcpkg install cpr
-vcpkg integrate install
+// Windows
+./bootstrap-vcpkg.bat
+// Mac/Linux
+./bootstrap-vcpkg.sh
+./vcpkg install nlohmann-json
+./vcpkg install cpr
+./vcpkg integrate install
 ```  
-
-* Clone the repository
-```bash
-git clone https://github.com/deni2312/ChatGPT-Cpp.git
-```
 
 * With CMake:
 ```bash
 rm -rf build
 mkdir build
-cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=/Users/liaohuizhong/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=<YOUR_VCPKG_PATH/scripts/buildsystems/vcpkg.cmake>
 cd build
 cmake --build .
-./ChatBot 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
+./ChatBot <OPENA_AI_TOKEN>
 ```  
-Change vcpkgdirectory with the relative or absolute path of vcpkg
+
+Every time you want to rebuild the project, you need to run `cmake --build .` in the build directory.
 
 ## Update Vcpkg
 Run this command to update vcpkg:
@@ -53,38 +66,3 @@ rm -rf installed
 ```
 
 Then run the cmake command again. You need to `rm -rf build/` and build again.
-
-## Writing your first bot
-
-<h3>Ask something!</h3>
-
-```c++
-#include <iostream>
-#include "ChatGPT/include/ChatGPT.h"
-#include "ChatGPT/include/Error.h"
-
-int main(int args,char** argv){
-    //API token as argument
-    OpenAI::ChatGPT chatGpt{argv[1]};
-    try {
-        //type of user and the message to ask
-        auto response = chatGpt.askChatGPT("user","Give me 5 words");
-        //Iterate all answers
-        for(const auto& choice:response.choices){
-            std::cout<<choice.message.content;
-        }
-    }catch(OpenAI::Error& e){
-        //JSON error returned by the server
-        std::cout<<e.what();
-    }
-    try {
-        auto response = chatGpt.askWhisper("sound.mp3");
-        std::cout<<response;
-    }catch(OpenAI::Error& e){
-        //JSON error returned by the server
-        std::cout<<e.what();
-    }
-}
-
-```
-Feel free to send feedbacks and open issues to improve the library.
