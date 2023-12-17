@@ -1,6 +1,7 @@
 #include "../include/Game.h"
 #include "../include/Error.h"
 #include <cpr/cpr.h> // verify api key
+#include <curl/curl.h>
 #include <vector>
 #include <stdlib.h> 
 #include <fstream>
@@ -179,15 +180,16 @@ bool System::Game::verifyOpenAiKey(const std::string& apiKey) {
     }
 }
 
-bool System::Game::checkConnection(){
-    const std::string host = "www.google.com";
-    int result = system(("ping -c 1 " + host).c_str());
-
-    if (result == 0) {
-        return true;
-    } else {
-        return false;
+bool System::Game::checkConnection() {
+    CURL *curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com");
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1); // HEAD request
+        CURLcode res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        return (res == CURLE_OK);
     }
+    return false;
 }
 
 OpenAI::Message System::Game::generateStoryPrompt(int story_index) {
