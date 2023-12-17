@@ -1,5 +1,5 @@
-# Use Ubuntu 20.04 as the base image
-FROM ubuntu:20.04
+# Stage 1: Build stage
+FROM ubuntu:20.04 as build
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
@@ -30,8 +30,7 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
     echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | \
     tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
     apt-get update && rm /usr/share/keyrings/kitware-archive-keyring.gpg && \
-    apt-get -y install kitware-archive-keyring \ 
-    cmake && \
+    apt-get -y install kitware-archive-keyring cmake && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 # Clone vcpkg and install packages
@@ -41,15 +40,30 @@ RUN git clone https://github.com/Microsoft/vcpkg.git \
     
 RUN vcpkg install cpr nlohmann-json
 
-# Set the working directory
 WORKDIR /app
-
-# Copy the current directory contents into the container at /app
 COPY . .
 
 # Build the project using CMake
 RUN cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
 RUN cmake --build build/
 
-# Define the command to run on container start
-CMD ["./build/ChatBot", "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"]
+# Stage 2: Runtime stage
+FROM ubuntu:20.04 as runtime
+
+# Set necessary environment variables for runtime
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
+
+# Copy the built application from the build stage
+COPY --from=build /app/build/ /app/
+
+# Set the working directory
+WORKDIR /app
+
+# Command to run the application
+CMD ["./ChatBot"]

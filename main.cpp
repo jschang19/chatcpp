@@ -4,28 +4,31 @@
 #include <stdlib.h> 
 #include <thread>
 #include <chrono>
+#include <cstdlib>  // For getenv
 #include "ChatGPT/include/Error.h"
 #include "ChatGPT/include/Game.h"
 // this is the main function
 
 const int STORY_NUM=5;
 
-int main(int args,char** argv){
+int main(){
     std::cout << "\033[2J\033[H";
     System::Game game;
-    if(args<2){
+    const char* openaiKey = std::getenv("OPENAI_API_KEY");
+    if(openaiKey == nullptr){
         game.print("沒有 OpenAI API Key，請在參數後方輸入你的 API key","r", true);
         game.print("範例：./ChatGPT <YOUR_API_KEY>");
         game.print("請至 https://platform.openai.com/api-keys 取得 API key");
         return 0;
     }
 
+    std::string key = openaiKey;
     game.print("\U0001F389 歡迎來到 NTU 模擬器！","w", true);
-    game.checkStatus(argv[1]);
+    game.checkStatus(key);
     std::cout<<std::endl;
 
     game.count=STORY_NUM;
-    OpenAI::ChatGPT chatGpt{argv[1]};
+    OpenAI::ChatGPT chatGpt{key};
     game.printWelcome();
     // get random story ids
     std::vector<int> story_ids = game.getRandStoryIds(STORY_NUM);
