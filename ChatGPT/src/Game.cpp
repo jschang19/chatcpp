@@ -10,6 +10,7 @@
 #include <algorithm> // std::shuffle
 #include <random>    // std::default_random_engine
 #include <chrono>    // std::chrono::system_clock
+#include <string>
 #include <tuple>
 #include <iostream>
 #include <thread>
@@ -109,6 +110,7 @@ void System::Game::printOptions(int id) {
 bool System::Game::setUserChoice(int story_id, std::string user_choice_id) {
     System::Story* story_ptr = this->getStoryPtrById(story_id);
     if (story_ptr == nullptr) {
+        std::cout<<"story_ptr is nullptr"<<std::endl;
         return false;
     }
     std::transform(user_choice_id.begin(), user_choice_id.end(), user_choice_id.begin(), ::tolower);
@@ -196,11 +198,20 @@ OpenAI::Message System::Game::generateStoryPrompt(int story_index) {
     std::string prompt = "";
     // get previous story
     if(this->current_count == 0){
-        prompt = "我在" + this->stories[story_index].place + "，我" + this->stories[story_index].content;
+        prompt = "我在" + this->stories[story_index].place + this->stories[story_index].content + "。";
     }else{
         int previous_id = this->story_ids[story_index - 1];
-        prompt = "我在「" + this->stories[story_index].place + "，" + this->stories[story_index].content + "」";
+        prompt +=( "我剛剛在" + this->stories[previous_id].place + this->stories[previous_id].content + "，我選擇「" + this->stories[previous_id].user_choice + "。」");
+        prompt += "現在我在" + this->stories[story_index].place + "，" + this->stories[story_index].content + "。";
     }
 
     return OpenAI::Message({"user", prompt});
 }
+
+OpenAI::Message System::Game::generateEndingPrompt(){
+    std::string final_prompt = "";
+    final_prompt = "我在「" + this->stories[this->current_count].place + "，" + this->stories[this->current_count].content + "」";
+    
+    return OpenAI::Message({"user", final_prompt});
+}
+
