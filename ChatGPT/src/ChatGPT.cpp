@@ -26,11 +26,14 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role, bool
     nlohmann::json j;
     j["model"] = "gpt-3.5-turbo-1106";
     j["messages"] = nlohmann::json::parse("[" + prompt_message + "]");
-    j["response_format"] = {{"type", "json_object"}};
     j["temperature"] = 0.8;
     j["max_tokens"] = 1000;
     j["n"] = 1;
     j["stream"] = false;
+
+    if(!isEnding){
+        j["response_format"] = {{"type", "json_object"}};
+    }
 
     auto response = cpr::Post(cpr::Url{m_link}, 
                               cpr::Body{j.dump()}, 
