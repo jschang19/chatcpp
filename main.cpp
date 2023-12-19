@@ -9,7 +9,7 @@
 #include "ChatGPT/include/Game.h"
 // this is the main function
 
-const int STORY_NUM=2;
+const int STORY_NUM=5;
 const char OPENAI_API_KEY[100]="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";
 
 int main(){
@@ -62,9 +62,9 @@ int main(){
 
             std::this_thread::sleep_for(std::chrono::seconds(1));
 
-            chatGpt.CoutPrompt();
+            // chatGpt.CoutPrompt();
         }
-        game.PrintFinalResult(chatGpt);
+        // game.PrintFinalResult(chatGpt);
         
     }catch(OpenAI::Error& e){
         //JSON error returned by the server
