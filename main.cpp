@@ -62,17 +62,18 @@ int main(){
         //JSON error returned by the server
         std::cout<<e.what();
     }
+
     std::cout << "\033[2J\033[H";
     OpenAI::Message final_prompt = game.generateEndingPrompt();
     game.addPrompt(chatGpt, final_prompt, true);
-    auto chatCompletion = game.sendToChatGPT(chatGpt, true);
-    game.parseEndingResponse(chatCompletion);
-
+    auto finalChatCompletion = game.sendToChatGPT(chatGpt, true);
+    game.parseEndingResponse(finalChatCompletion);
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    std::cout << "\033[2J\033[H";
+    std::cout<<std::endl;
     game.print("遊戲結束！感謝你的遊玩","w", true);
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-    game.print("本遊戲由第 48 小組製作，以及 OpenAI 提供技術支援","l");
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::cout << "\033[2J\033[H";
+    game.print("本遊戲由第 47 小組製作，以及 OpenAI 提供技術支援","l");
     game.print("本專案架構參考 deni2312/ChatGPT-Cpp 擴充開發","l");
     return 0;
 }
