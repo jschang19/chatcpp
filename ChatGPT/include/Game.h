@@ -65,7 +65,6 @@ class Game {
     }
   };
   void parseEndingResponse(OpenAI::ChatCompletion& chatCompletion) {
-    nlohmann::json j2;
     try {
      for(const auto& choice:chatCompletion.choices){
             std::cout<<choice.message.content;
