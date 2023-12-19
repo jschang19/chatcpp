@@ -41,9 +41,9 @@ int main(){
             OpenAI::Message prompt = game.generateStoryPrompt(i);
             game.addPrompt(chatGpt, prompt, false);
             auto chatCompletion = game.sendToChatGPT(chatGpt, false);
-            game.parseGPTResponse(chatCompletion, story_id);
             std::cout << "\033[2J\033[H";
-    
+
+            game.parseGPTResponse(chatCompletion, story_id);
             game.printOptions(story_id);
             std::cout<<std::endl;
 
