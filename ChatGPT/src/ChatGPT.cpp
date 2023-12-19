@@ -22,6 +22,7 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
     if (prompt_message==""){ //exception handling
         throw std::invalid_argument("Error:there is no prompt message, please use Add_prompts() to add prompt in Chatgpt");
     }
+
     nlohmann::json j;
     j["model"] = "gpt-3.5-turbo-1106";
     j["messages"] = nlohmann::json::parse("[" + prompt_message + "]");
@@ -70,7 +71,7 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role) {
     return chatCompletion;
 }
 
-std::string OpenAI::ChatGPT::askWhisper(const std::string &audio_path) {
+std::string OpenAI::ChatGPT::askWhiasper(const std::string& audio_path) {
     std::string url = "https://api.openai.com/v1/audio/transcriptions";
     std::string model_name = "whisper-1";
     std::string auth_token = "Bearer " + std::string(m_token);

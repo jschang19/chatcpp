@@ -30,10 +30,7 @@ namespace System {
         int count;
         int current_count = 0;
         std::vector<int> story_ids;
-        void addPrompt(OpenAI::ChatGPT& chatGpt, const int story_id){
-            OpenAI::Message prompt = this->generateStoryPrompt(story_id);
-            chatGpt.Add_prompt(prompt);
-        };
+        void addPrompt(OpenAI::ChatGPT& chatGpt, const int story_id);
         OpenAI::ChatCompletion sendToChatGPT(OpenAI::ChatGPT& chatGpt){
             this->print("ChatGPT 正在思考中...", "l");
             std::cout<<std::endl;
@@ -107,6 +104,7 @@ namespace System {
         bool verifyOpenAiKey(const std::string& key);
         bool checkConnection();
         bool setUserChoice(int story_id, std::string user_choice_id);
+        void PrintFinalResult(OpenAI :: ChatGPT& chatgpt); //印出遊戲結局
     private:
         std::vector< System::Story > readTextFile(const std::string& filename);
     };

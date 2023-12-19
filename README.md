@@ -52,14 +52,14 @@ cd vcpkg
 ```bash
 rm -rf build
 mkdir build
-cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=<YOUR_VCPKG_PATH/scripts/buildsystems/vcpkg.cmake>
+cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=/Users/liaohuizhong/Library/CloudStorage/OneDrive-個人/文件/大學/大學課業/大一上/程式設計/ntu-im-final-project/vcpkg/scripts/buildsystems/vcpkg.cmake
 cd build
 cmake --build .
 ```  
 
 4. Run the project
 ```bash
-./ChatGPT
+./ChatBot
 ```
 
 Every time you want to rebuild the project, you need to run `cmake --build .` in the build directory.

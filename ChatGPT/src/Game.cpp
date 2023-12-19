@@ -33,6 +33,11 @@ System::Story::~Story() {
     this->choices.clear();
 }
 
+void System :: Game :: addPrompt(OpenAI::ChatGPT& chatGpt, const int story_id){
+        OpenAI::Message prompt = this->generateStoryPrompt(story_id);
+        chatGpt.Add_prompt(prompt);
+    };
+
 std::vector<int> System::Game::getRandStoryIds(int num) {
     std::vector<int> ids;
 
@@ -203,4 +208,11 @@ OpenAI::Message System::Game::generateStoryPrompt(int story_index) {
     }
 
     return OpenAI::Message({"user", prompt});
+}
+
+void System::Game:: PrintFinalResult(OpenAI :: ChatGPT& chatgpt){
+    OpenAI :: Message ending_prompt("user","利用以上的所有資訊，幫我生成一個大概100字的故事結局");
+    chatgpt.Add_prompt(ending_prompt);
+    OpenAI::ChatCompletion chatcompletion = chatgpt.askChatGPT("user");
+    std::cout << chatcompletion.choices[0].message.content;
 }

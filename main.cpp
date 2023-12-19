@@ -9,12 +9,13 @@
 #include "ChatGPT/include/Game.h"
 // this is the main function
 
-const int STORY_NUM=5;
+const int STORY_NUM=2;
+const char OPENAI_API_KEY[100]="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";
 
 int main(){
     std::cout << "\033[2J\033[H";
     System::Game game;
-    const char* openaiKey = std::getenv("OPENAI_API_KEY");
+    const char* openaiKey = OPENAI_API_KEY;
     if(openaiKey == nullptr){
         game.print("沒有 OpenAI API Key，請在參數後方輸入你的 API key","r", true);
         game.print("範例：./ChatGPT <YOUR_API_KEY>");
@@ -39,11 +40,11 @@ int main(){
 
     try {
         for (int i=0; i<STORY_NUM; i++){
-            std::cout << "\033[2J\033[H";
+            // std::cout << "\033[2J\033[H";
 
             int story_id = story_ids[i];
             OpenAI::Message prompt = game.generateStoryPrompt(i);
-            game.addPrompt(chatGpt, story_id);
+            game.addPrompt(chatGpt,story_id);
             auto chatCompletion = game.sendToChatGPT(chatGpt);
             game.parseGPTResponse(chatCompletion, story_id);
             std::cout << "\033[2J\033[H";
@@ -60,7 +61,11 @@ int main(){
             std::cout<<std::endl;
 
             std::this_thread::sleep_for(std::chrono::seconds(1));
+
+            chatGpt.CoutPrompt();
         }
+        game.PrintFinalResult(chatGpt);
+        
     }catch(OpenAI::Error& e){
         //JSON error returned by the server
         std::cout<<e.what();
