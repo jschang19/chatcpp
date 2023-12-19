@@ -41,7 +41,8 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role, bool
                               cpr::Header{{"Content-Type", "application/json"}}).text;
 
     OpenAI::ChatCompletion chatCompletion;
-    try {
+    if(!isEnding){
+        try {
         nlohmann::json j_response = nlohmann::json::parse(response);
         if (!j_response.contains("error")) {
             from_json(j_response, chatCompletion);
@@ -69,6 +70,7 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role, bool
         j2 = nlohmann::json::parse(chatCompletion.choices[0].message.content);
     }catch(std::exception& e){
         std::cerr<<"parsing j2 Error: "+chatCompletion.choices[0].message.content;
+    }
     }
     return chatCompletion;
 }
