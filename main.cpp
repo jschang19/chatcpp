@@ -62,6 +62,7 @@ int main(){
         //JSON error returned by the server
         std::cout<<e.what();
     }
+    std::cout << "\033[2J\033[H";
     OpenAI::Message final_prompt = game.generateEndingPrompt();
     game.addPrompt(chatGpt, final_prompt, true);
     auto chatCompletion = game.sendToChatGPT(chatGpt, true);

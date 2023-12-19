@@ -74,7 +74,7 @@ void OpenAI::ChatGPT::addPrompt(const Message& new_prompt){
     this->prompts.push_back(new_prompt);
 }
 
-std::string OpenAI::ChatGPT::formatPrompt(const Message& prompt, bool isLast, bool isEnding = false) {
+std::string OpenAI::ChatGPT::formatPrompt(const Message& prompt, bool isLast, bool isEnding) {
     std::stringstream ss;
     ss << " {\"role\": \"" << prompt.role << "\", \"content\": \"" << prompt.content;
     
@@ -95,12 +95,12 @@ std::string OpenAI::ChatGPT::formatPrompt(const Message& prompt, bool isLast, bo
     return ss.str();
 }
 
-std::string OpenAI::ChatGPT::promptsToStringContent(bool isEnding = false) {
+std::string OpenAI::ChatGPT::promptsToStringContent(bool isEnding) {
     std::stringstream returnStream;
     returnStream << "{\"role\": \"system\", \"content\": \"You are a funny story teller that speaks chinese\"},";
 
     for (size_t i = 0; i < prompts.size(); ++i) {
-        returnStream << formatPrompt(prompts[i], i == prompts.size() - 1);
+        returnStream << formatPrompt(prompts[i], i == prompts.size() - 1, isEnding);
         returnStream << (i != prompts.size() - 1 ? ",\n" : "\n");
     }
 
