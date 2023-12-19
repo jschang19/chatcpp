@@ -12,15 +12,14 @@ namespace OpenAI {
     class ChatGPT {
         public:
             explicit ChatGPT(const std::string& token);
-            OpenAI::ChatCompletion askChatGPT(const std::string& role);
-            std::string askWhisper(const std::string& audio_path);
+            OpenAI::ChatCompletion askChatGPT(const std::string& role, bool isEnding);
             std::vector< Message > prompts;
-            void Add_prompt(const Message& prompt);
+            void addPrompt(const Message& prompt);
 
         private:
             std::string m_token;
             std::string m_link;
-
-            std::string PromptsToStringContent();
+            std::string formatPrompt(const Message& prompt, bool isLast, bool isEnding);
+            std::string promptsToStringContent(bool isEnding);
     };
 }
