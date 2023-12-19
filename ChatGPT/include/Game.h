@@ -67,9 +67,9 @@ class Game {
   void parseEndingResponse(OpenAI::ChatCompletion& chatCompletion) {
     nlohmann::json j2;
     try {
-     for(auto &choice: chatCompletion.choices){
-       std::cout<<choice.message.content<<std::endl;
-      }
+     for(const auto& choice:chatCompletion.choices){
+            std::cout<<choice.message.content;
+        }
     } catch (std::exception& e) {
       std::cerr << "Game.h ending parsing Error: " +
                        chatCompletion.choices[0].message.content;

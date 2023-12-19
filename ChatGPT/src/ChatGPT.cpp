@@ -26,7 +26,7 @@ OpenAI::ChatCompletion OpenAI::ChatGPT::askChatGPT(const std::string& role, bool
     nlohmann::json j;
     j["model"] = "gpt-3.5-turbo-1106";
     j["messages"] = nlohmann::json::parse("[" + prompt_message + "]");
-    j["temperature"] = 0.8;
+    j["temperature"] = 1.1;
     j["max_tokens"] = 1000;
     j["n"] = 1;
     j["stream"] = false;
@@ -89,7 +89,7 @@ std::string OpenAI::ChatGPT::formatPrompt(const Message& prompt, bool isLast, bo
        if(isEnding){
           ss<<"，幫我從我的故事中產生一個好笑的遊戲結局";
        }else{
-         ss << "，講 4 個搞笑且具有創意的遊戲情境，並確保選項都跟之前我的選擇行動有關，"
+         ss << "，講 4 個搞笑且具有創意的遊戲情境，"
             << "遵守以下三個規則：1.都以「你」當作開頭 2.不要問我可不可以，直接給我情境 3.不要用疑問句。"
             << "都用一個 key 叫 options 的 JSON 物件格式回覆我"
             << "而這個 options 的 value 是一個 Array，每個陣列元素要包含 id 跟 text 兩個 key，id 代號為 a, b, c, d";
