@@ -33,20 +33,17 @@ int main(){
     // get random story ids
     std::vector<int> story_ids = game.getRandStoryIds(STORY_NUM);
     game.story_ids = story_ids;
-    // get story pointers
-    std::vector<System::Story*> story_ptrs;
-
 
     try {
         for (int i=0; i<STORY_NUM; i++){
             std::cout << "\033[2J\033[H";
-
             int story_id = story_ids[i];
             OpenAI::Message prompt = game.generateStoryPrompt(i);
-            game.addPrompt(chatGpt, story_id);
-            auto chatCompletion = game.sendToChatGPT(chatGpt);
+            game.addPrompt(chatGpt, prompt, false);
+            auto chatCompletion = game.sendToChatGPT(chatGpt, false);
             game.parseGPTResponse(chatCompletion, story_id);
             std::cout << "\033[2J\033[H";
+    
             game.printOptions(story_id);
             std::cout<<std::endl;
 
@@ -65,4 +62,16 @@ int main(){
         //JSON error returned by the server
         std::cout<<e.what();
     }
+    OpenAI::Message final_prompt = game.generateEndingPrompt();
+    game.addPrompt(chatGpt, final_prompt, true);
+    auto chatCompletion = game.sendToChatGPT(chatGpt, true);
+    game.parseEndingResponse(chatCompletion);
+
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::cout << "\033[2J\033[H";
+    game.print("遊戲結束！感謝你的遊玩","w", true);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    game.print("本遊戲由第 48 小組製作，以及 OpenAI 提供技術支援","l");
+    game.print("本專案架構參考 deni2312/ChatGPT-Cpp 擴充開發","l");
+    return 0;
 }
