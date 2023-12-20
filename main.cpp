@@ -10,7 +10,7 @@
 // this is the main function
 
 const int STORY_NUM=5;
-const char OPENAI_API_KEY[100]="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";
+const char OPENAI_API_KEY[100]="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";
 
 int main(){
     std::cout << "\033[2J\033[H";
@@ -39,7 +39,7 @@ int main(){
         for (int i=0; i<STORY_NUM; i++){
             std::cout << "\033[2J\033[H";
             int story_id = story_ids[i];
-            OpenAI::Message prompt = game.generateStoryPrompt(i);
+            OpenAI::Message prompt = game.generateStoryPrompt(story_id);
             game.addPrompt(chatGpt, prompt, false);
             auto chatCompletion = game.sendToChatGPT(chatGpt, false);
             std::cout << "\033[2J\033[H";

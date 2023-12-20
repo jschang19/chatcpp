@@ -269,7 +269,7 @@ void System::Game::parseEndingResponse(OpenAI::ChatCompletion& chatCompletion) {
     }
 }
 
-void System::Game::print(const std::string& str, const std::string& color = "w",bool bold = false) {
+void System::Game::print(const std::string& str, const std::string& color ,bool bold ) {
     std::string color_code;
     switch (color[0]) {
       case 'r':
