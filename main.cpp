@@ -28,12 +28,12 @@ int main(){
     game.checkStatus(key);
     std::cout<<std::endl;
 
-    game.count=STORY_NUM;
+    game.set_count(STORY_NUM);
     OpenAI::ChatGPT chatGpt{key};
     game.printWelcome();
     // get random story ids
     std::vector<int> story_ids = game.getRandStoryIds(STORY_NUM);
-    game.story_ids = story_ids;
+    game.set_story_id(story_ids);
 
     try {
         for (int i=0; i<STORY_NUM; i++){
@@ -54,7 +54,7 @@ int main(){
             std::cout<<std::endl;
             game.print("你選擇了 "+userInput, "w");
             game.setUserChoice(story_id, userInput);
-            game.current_count += 1;
+            game.add_current_count(1);
             std::cout<<std::endl;
 
             std::this_thread::sleep_for(std::chrono::seconds(1));

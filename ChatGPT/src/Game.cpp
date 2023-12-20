@@ -17,6 +17,16 @@
 #include <chrono>
 #include <cstdlib> // for connection check
 
+void System::Game::set_count(int new_count){
+    this->count=new_count;
+}
+void System::Game::set_story_id(std::vector<int> new_ids){
+    this->story_ids=new_ids;
+}
+void System::Game::add_current_count(int adding_num){
+    this->current_count+=adding_num;
+}
+
 
 System::Game::Game(){
     try {
