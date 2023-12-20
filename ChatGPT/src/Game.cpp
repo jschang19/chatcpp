@@ -10,6 +10,7 @@
 #include <algorithm> // std::shuffle
 #include <random>    // std::default_random_engine
 #include <chrono>    // std::chrono::system_clock
+#include <string>
 #include <tuple>
 #include <iostream>
 #include <thread>
@@ -32,11 +33,6 @@ System::Game::~Game() {
 System::Story::~Story() {
     this->choices.clear();
 }
-
-void System :: Game :: addPrompt(OpenAI::ChatGPT& chatGpt, const int story_id){
-        OpenAI::Message prompt = this->generateStoryPrompt(story_id);
-        chatGpt.Add_prompt(prompt);
-    };
 
 std::vector<int> System::Game::getRandStoryIds(int num) {
     std::vector<int> ids;
@@ -114,6 +110,7 @@ void System::Game::printOptions(int id) {
 bool System::Game::setUserChoice(int story_id, std::string user_choice_id) {
     System::Story* story_ptr = this->getStoryPtrById(story_id);
     if (story_ptr == nullptr) {
+        std::cout<<"story_ptr is nullptr"<<std::endl;
         return false;
     }
     std::transform(user_choice_id.begin(), user_choice_id.end(), user_choice_id.begin(), ::tolower);
@@ -201,18 +198,101 @@ OpenAI::Message System::Game::generateStoryPrompt(int story_index) {
     std::string prompt = "";
     // get previous story
     if(this->current_count == 0){
-        prompt = "我在" + this->stories[story_index].place + "，我" + this->stories[story_index].content;
+        prompt = "我在" + this->stories[story_index].place + this->stories[story_index].content + "。";
     }else{
         int previous_id = this->story_ids[story_index - 1];
-        prompt = "我在「" + this->stories[story_index].place + "，" + this->stories[story_index].content + "」";
+        prompt +=( "我剛剛在" + this->stories[previous_id].place + this->stories[previous_id].content + "，我選擇「" + this->stories[previous_id].user_choice + "。」");
+        prompt += "現在我在" + this->stories[story_index].place + "，" + this->stories[story_index].content + "。";
     }
 
     return OpenAI::Message({"user", prompt});
 }
 
-void System::Game:: PrintFinalResult(OpenAI :: ChatGPT& chatgpt){
-    OpenAI :: Message ending_prompt("user","利用以上的所有資訊，幫我生成一個大概100字的故事結局");
-    chatgpt.Add_prompt(ending_prompt);
-    OpenAI::ChatCompletion chatcompletion = chatgpt.askChatGPT("user");
-    std::cout << chatcompletion.choices[0].message.content;
+OpenAI::Message System::Game::generateEndingPrompt(){
+    std::string final_prompt = "";
+    final_prompt = "我在「" + this->stories[this->current_count].place + "，" + this->stories[this->current_count].content + "」";
+    
+    return OpenAI::Message({"user", final_prompt});
 }
+
+ void System :: Game :: addPrompt(OpenAI::ChatGPT& chatGpt, const OpenAI::Message& prompt,bool isLast) {
+    if (isLast) {
+      OpenAI::Message prompt = this->generateEndingPrompt();
+        chatGpt.addPrompt(prompt);
+    } else {
+      chatGpt.addPrompt(prompt);
+    }
+
+  };
+
+OpenAI::ChatCompletion System :: Game ::sendToChatGPT(OpenAI::ChatGPT& chatGpt, bool isEnding) {
+    this->print("ChatGPT 正在思考中...", "l");
+    std::cout << std::endl;
+    auto response = chatGpt.askChatGPT("user", isEnding);
+    return response;
+}
+
+void System::Game::parseGPTResponse(OpenAI::ChatCompletion& chatCompletion, int story_id) {
+    System::Story* story_ptr = this->getStoryPtrById(story_id);
+    nlohmann::json j2;
+    try {
+      j2 = nlohmann::json::parse(chatCompletion.choices[0].message.content);
+      std::vector<System::Option> choices;
+      for (auto& choice : j2["options"]) {
+        choices.push_back(System::Option(choice["id"], choice["text"]));
+      }
+      this->setOptions(story_id, choices);
+    } catch (std::exception& e) {
+      std::cerr << "Game.h parsing Error: " +
+                       chatCompletion.choices[0].message.content;
+    }
+}
+
+void System::Game::parseEndingResponse(OpenAI::ChatCompletion& chatCompletion) {
+    try {
+     for(const auto& choice:chatCompletion.choices){
+            std::cout<<choice.message.content;
+        }
+    } catch (std::exception& e) {
+      std::cerr << "Game.h ending parsing Error: " +
+                       chatCompletion.choices[0].message.content;
+    }
+}
+
+void System::Game::print(const std::string& str, const std::string& color = "w",bool bold = false) {
+    std::string color_code;
+    switch (color[0]) {
+      case 'r':
+        color_code = "31";
+        break;
+      case 'g':
+        color_code = "32";
+        break;
+      case 'y':
+        color_code = "33";
+        break;
+      case 'b':
+        color_code = "34";
+        break;
+      case 'p':
+        color_code = "35";
+        break;
+      case 'c':
+        color_code = "36";
+        break;
+      case 'w':
+        color_code = "37";
+        break;
+      case 'l':
+        color_code = "90";
+        break;
+      default:
+        color_code = "37";
+        break;
+    }
+    if (bold) {
+      std::cout << "\033[1;" << color_code << "m" << str << "\033[0m\n";
+    } else {
+      std::cout << "\033[" << color_code << "m" << str << "\033[0m\n";
+    }
+  };
