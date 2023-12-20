@@ -11,12 +11,12 @@ namespace OpenAI {
 
     class ChatGPT {
         public:
-            explicit ChatGPT(const std::string& token);
-            OpenAI::ChatCompletion askChatGPT(const std::string& role, bool isEnding);
-            std::vector< Message > prompts;
-            void addPrompt(const Message& prompt);
+            explicit ChatGPT(const std::string& token); //constructor
+            OpenAI::ChatCompletion askChatGPT(const std::string& role, bool isEnding); //using prompt
+            void addPrompt(const Message& prompt); //把新的prompt加入this->prompts中
 
         private:
+            std::vector< Message > prompts; //儲存所有給需要prompt給ChatGPT的資料
             std::string m_token;
             std::string m_link;
             std::string formatPrompt(const Message& prompt, bool isLast, bool isEnding);
